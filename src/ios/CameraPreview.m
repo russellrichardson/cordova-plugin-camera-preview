@@ -8,6 +8,8 @@
 
 @implementation CameraPreview
 
+@synthesize outputPath;
+
 -(void) pluginInitialize{
   // start as transparent
   self.webView.opaque = NO;
@@ -789,6 +791,66 @@
     } while ([fileMgr fileExistsAtPath:filePath]);
 
     return filePath;
+}
+
+
+- (void) startRecordVideo:(CDVInvokedUrlCommand *)command {
+    [self.commandDelegate runInBackground:^{
+        NSLog(@"startRecordVideo");
+        CDVPluginResult *pluginResult;
+
+        outputPath = [self getFileName];
+        NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
+
+        if (self.sessionManager != nil) {
+            [self.sessionManager startRecordVideo:fileURI];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:fileURI.absoluteString];
+        } else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
+        }
+
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)stopRecordVideo:(CDVInvokedUrlCommand *)command
+{
+
+    CDVPluginResult *pluginResult;
+
+    if (self.sessionManager != nil) {
+        [self.commandDelegate runInBackground:^{
+            [self.sessionManager stopRecordVideo];
+        }];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];
+    }
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+-(NSString*)getFileName
+{
+    int fileNameIncrementer = 1;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *libPath = [self getCachePath];
+    NSString *token = @"tmpVideo";
+
+    NSString *tempPath = [[NSString alloc] initWithFormat:@"%@%@%@", libPath, token, VideoFileExtension];
+
+    while ([fileManager fileExistsAtPath:tempPath]) {
+        tempPath = [NSString stringWithFormat:@"%@%@_%i%@", libPath, token, fileNameIncrementer, VideoFileExtension];
+        fileNameIncrementer++;
+    }
+
+    return tempPath;
+}
+
+-(NSString*)getCachePath
+{
+    NSString* cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
+    return [NSString stringWithFormat:@"%@/", cachePath];
 }
 
 @end

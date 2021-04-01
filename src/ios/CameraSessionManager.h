@@ -37,6 +37,8 @@
 - (BOOL) isTorchActive;
 - (void) setTorchMode;
 - (AVCaptureVideoOrientation) getCurrentOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
+- (void) startRecordVideo:(NSURL *)fileUrl;
+- (void) stopRecordVideo;
 
 @property (atomic) CIFilter *ciFilter;
 @property (nonatomic) NSLock *filterLock;
@@ -52,4 +54,11 @@
 @property (nonatomic, assign) id delegate;
 @property (nonatomic) NSString *currentWhiteBalanceMode;
 @property (nonatomic) NSDictionary *colorTemperatures;
+@property (nonatomic) AVCaptureMovieFileOutput *videoFileOutput;
+@property (nonatomic) AVAssetWriterInput *assetWriterInput;
+@property (nonatomic) AVAssetWriterInputPixelBufferAdaptor *pixelBufferAdaptor;
+@property (nonatomic) AVAssetWriter *assetWriterMyData;
+@property (nonatomic) BOOL isRecording;
+@property (atomic) int64_t frameNumber;
+
 @end

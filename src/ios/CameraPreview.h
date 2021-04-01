@@ -4,6 +4,7 @@
 
 #import "CameraSessionManager.h"
 #import "CameraRenderController.h"
+#define VideoFileExtension @".MOV"
 
 @interface CameraPreview : CDVPlugin <TakePictureDelegate, FocusDelegate>
 
@@ -29,6 +30,8 @@
 - (void) switchCamera:(CDVInvokedUrlCommand*)command;
 - (void) takePicture:(CDVInvokedUrlCommand*)command;
 - (void) takeSnapshot:(CDVInvokedUrlCommand*)command;
+- (void) startRecordVideo:(CDVInvokedUrlCommand*)command;
+- (void) stopRecordVideo:(CDVInvokedUrlCommand*)command;
 - (void) setColorEffect:(CDVInvokedUrlCommand*)command;
 - (void) getSupportedPictureSizes:(CDVInvokedUrlCommand*)command;
 - (void) getSupportedFlashModes:(CDVInvokedUrlCommand*)command;
@@ -47,5 +50,6 @@
 @property (nonatomic) CameraRenderController *cameraRenderController;
 @property (nonatomic) NSString *onPictureTakenHandlerId;
 @property (nonatomic) BOOL storeToFile;
+@property NSString *outputPath;
 
 @end

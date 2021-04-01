@@ -215,6 +215,13 @@
     [self.ciContext drawImage:croppedImage inRect:dest fromRect:[croppedImage extent]];
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
     [(GLKView *)(self.view)display];
+
+    if(self.sessionManager.assetWriterInput.readyForMoreMediaData && self.sessionManager.isRecording && self.sessionManager.session.isRunning) {
+      NSLog (@"readyForMoreMediaData");
+      CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+      [self.sessionManager.pixelBufferAdaptor appendPixelBuffer:imageBuffer withPresentationTime:CMTimeMake(self.sessionManager.frameNumber, 25)];
+      self.sessionManager.frameNumber++;
+    }
     [self.renderLock unlock];
   }
 }
