@@ -709,17 +709,17 @@ public class CameraActivity extends Fragment {
         mRecorder.setCamera(mCamera);
 
         CamcorderProfile profile;
-        if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_HIGH)) {
-          profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_HIGH);
+        if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_480P)) {
+          profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_480P);
         } else {
-          if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_480P)) {
-            profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_480P);
+          if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_720P)) {
+            profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_720P);
           } else {
-            if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_720P)) {
-              profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_720P);
+            if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_1080P)) {
+              profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_1080P);
             } else {
-              if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_1080P)) {
-                profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_1080P);
+              if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_HIGH)) {
+                profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_HIGH);
               } else {
                 profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_LOW);
               }
@@ -728,9 +728,16 @@ public class CameraActivity extends Fragment {
         }
 
 
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
+        //mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
         mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        mRecorder.setProfile(profile);
+        //mRecorder.setProfile(profile);
+
+        mRecorder.setOutputFormat(profile.fileFormat);
+        mRecorder.setVideoEncoder(profile.videoCodec);
+        mRecorder.setVideoEncodingBitRate(profile.videoBitRate);
+        mRecorder.setVideoFrameRate(/*profile.videoFrameRate*/ 30);
+        mRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
+
         mRecorder.setOutputFile(filePath);
         mRecorder.setOrientationHint(mOrientationHint);
 
