@@ -754,12 +754,12 @@
 }
 
 -(void)stopRecordVideo {
-    self.isRecording = false;
-    [self.assetWriterMyData finishWritingWithCompletionHandler:^(){
-        NSLog (@"finished writing");
-
-        
-    }];
+    if(self.isRecording) {
+      self.isRecording = false;
+      [self.assetWriterMyData finishWritingWithCompletionHandler:^(){
+          NSLog (@"finished writing");
+      }];
+    }
 }
 
 @end
