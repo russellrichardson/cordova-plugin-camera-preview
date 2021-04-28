@@ -37,7 +37,7 @@
 - (BOOL) isTorchActive;
 - (void) setTorchMode;
 - (AVCaptureVideoOrientation) getCurrentOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
-- (void) startRecordVideo:(NSURL *)fileUrl;
+- (void) startRecordVideo:(NSURL *)fileUrl width:(CGFloat)width height:(CGFloat)height;
 - (void) stopRecordVideo;
 
 @property (atomic) CIFilter *ciFilter;

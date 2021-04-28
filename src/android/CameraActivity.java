@@ -709,11 +709,11 @@ public class CameraActivity extends Fragment {
         mRecorder.setCamera(mCamera);
 
         CamcorderProfile profile;
-        if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_480P)) {
-          profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_480P);
+        if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_720P)) {
+          profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_720P);
         } else {
-          if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_720P)) {
-            profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_720P);
+          if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_480P)) {
+            profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_480P);
           } else {
             if (CamcorderProfile.hasProfile(defaultCameraId, CamcorderProfile.QUALITY_1080P)) {
               profile = CamcorderProfile.get(defaultCameraId, CamcorderProfile.QUALITY_1080P);

@@ -795,6 +795,9 @@
 
 
 - (void) startRecordVideo:(CDVInvokedUrlCommand *)command {
+    // cameraDirection, width, height, quality, withFlash
+    CGFloat width = (CGFloat)[command.arguments[1] floatValue];
+    CGFloat height = (CGFloat)[command.arguments[2] floatValue];
     [self.commandDelegate runInBackground:^{
         NSLog(@"startRecordVideo");
         CDVPluginResult *pluginResult;
@@ -803,7 +806,7 @@
         NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
 
         if (self.sessionManager != nil) {
-            [self.sessionManager startRecordVideo:fileURI];
+            [self.sessionManager startRecordVideo:fileURI width:width height:height];
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:fileURI.absoluteString];
         } else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Session not started"];

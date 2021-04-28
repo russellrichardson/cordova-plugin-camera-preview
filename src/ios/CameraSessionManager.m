@@ -7,8 +7,8 @@
     // Create the AVCaptureSession
     self.session = [[AVCaptureSession alloc] init];
     self.sessionQueue = dispatch_queue_create("session queue", DISPATCH_QUEUE_SERIAL);
-    if ([self.session canSetSessionPreset:AVCaptureSessionPresetPhoto]) {
-      [self.session setSessionPreset:AVCaptureSessionPresetPhoto];
+    if ([self.session canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+      [self.session setSessionPreset:AVCaptureSessionPreset1280x720];
     }
     self.filterLock = [[NSLock alloc] init];
 
@@ -725,10 +725,35 @@
 }
 
 
--(void) startRecordVideo:(NSURL *) fileUrl {
-    
+-(void) startRecordVideo:(NSURL *)fileUrl width:(CGFloat)width height:(CGFloat)height {
+
+    // "best" solution is probably to determine input buffer size and defer creation of asset writer
+    // until first frame is ready to be written in renderer
+    //
+    // https://stackoverflow.com/questions/13957305/how-to-preserve-the-aspect-ratio-of-video-using-avassetwriter
+    //
+    // CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    // CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    // size_t width = CVPixelBufferGetWidth(imageBuffer);
+    // size_t height = CVPixelBufferGetHeight(imageBuffer);
+    // CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    // NSLog(@"NVW size=%zd, %zd", width, height);
+
+    // NSDictionary* compression = @{
+    //     AVVideoAverageBitRateKey:[NSNumber numberWithInt:960000],
+    //     AVVideoMaxKeyFrameIntervalKey:[NSNumber numberWithInt:1]
+    // };
+    // self.videoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo
+    //     outputSettings:@{
+    //         AVVideoCodecKey:AVVideoCodecH264,
+    //         AVVideoCompressionPropertiesKey:compression,
+    //         AVVideoWidthKey:[NSNumber numberWithInt:width],
+    //         AVVideoHeightKey:[NSNumber numberWithInt:height]
+    //     }];
+    // self.videoInput.expectsMediaDataInRealTime = YES;
+
     NSDictionary *outputSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [NSNumber numberWithInt:720], AVVideoWidthKey, [NSNumber numberWithInt:1280], AVVideoHeightKey, AVVideoCodecH264, AVVideoCodecKey, nil];
+                                    [NSNumber numberWithInt:width], AVVideoWidthKey, [NSNumber numberWithInt:height], AVVideoHeightKey, AVVideoCodecH264, AVVideoCodecKey, nil];
     self.assetWriterInput = [AVAssetWriterInput  assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
     
     self.pixelBufferAdaptor = [[AVAssetWriterInputPixelBufferAdaptor alloc]initWithAssetWriterInput:self.assetWriterInput sourcePixelBufferAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
