@@ -734,7 +734,7 @@ public class CameraActivity extends Fragment {
 
         mRecorder.setOutputFormat(profile.fileFormat);
         mRecorder.setVideoEncoder(profile.videoCodec);
-        mRecorder.setVideoEncodingBitRate(profile.videoBitRate);
+        mRecorder.setVideoEncodingBitRate(Math.min(profile.videoBitRate, 6000000));
         mRecorder.setVideoFrameRate(/*profile.videoFrameRate*/ 30);
         mRecorder.setVideoSize(profile.videoFrameWidth, profile.videoFrameHeight);
 
