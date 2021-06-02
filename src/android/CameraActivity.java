@@ -754,39 +754,43 @@ public class CameraActivity extends Fragment {
   }
 
   public int calculateOrientationHint() {
-    DisplayMetrics dm = new DisplayMetrics();
-    Camera.CameraInfo info = new Camera.CameraInfo();
-    Camera.getCameraInfo(defaultCameraId, info);
-    int cameraRotationOffset = info.orientation;
-    Activity activity = getActivity();
+    // DisplayMetrics dm = new DisplayMetrics();
+    // Camera.CameraInfo info = new Camera.CameraInfo();
+    // Camera.getCameraInfo(defaultCameraId, info);
+    // int cameraRotationOffset = info.orientation;
+    // Activity activity = getActivity();
 
-    activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-    int currentScreenRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+    // activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+    // int currentScreenRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
 
-    int degrees = 0;
-    switch (currentScreenRotation) {
-      case Surface.ROTATION_0:
-        degrees = 0;
-        break;
-      case Surface.ROTATION_90:
-        degrees = 90;
-        break;
-      case Surface.ROTATION_180:
-        degrees = 180;
-        break;
-      case Surface.ROTATION_270:
-        degrees = 270;
-        break;
-    }
+    // int degrees = 0;
+    // switch (currentScreenRotation) {
+    //   case Surface.ROTATION_0:
+    //     degrees = 0;
+    //     break;
+    //   case Surface.ROTATION_90:
+    //     degrees = 90;
+    //     break;
+    //   case Surface.ROTATION_180:
+    //     degrees = 180;
+    //     break;
+    //   case Surface.ROTATION_270:
+    //     degrees = 270;
+    //     break;
+    // }
 
-    int orientation;
-    if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-      orientation = (cameraRotationOffset + degrees) % 360;
-      if (degrees != 0) {
-        orientation = (360 - orientation) % 360;
-      }
-    } else {
-      orientation = (cameraRotationOffset - degrees + 360) % 360;
+    // int orientation;
+    // if (mPreview.getCameraFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+    //   orientation = (cameraRotationOffset + degrees) % 360;
+    //   if (degrees != 0) {
+    //     orientation = (360 - orientation) % 360;
+    //   }
+    // } else {
+    //   orientation = (cameraRotationOffset - degrees + 360) % 360;
+    // }
+    int orientation = mPreview.getDisplayOrientation();
+    if (mPreview.getCameraFacing() == Camera.CameraInfo.CAMERA_FACING_FRONT && orientation % 180 == 90) {
+      orientation = (orientation + 180) % 360;
     }
     Log.w(TAG, "************orientationHint ***********= " + orientation);
 
