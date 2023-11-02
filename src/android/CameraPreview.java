@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Handler;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -32,6 +33,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class CameraPreview extends CordovaPlugin implements CameraActivity.CameraPreviewListener {
 
@@ -1164,4 +1166,21 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     return true;
   }
 
+  private String[] getVideoPermissions() {
+    ArrayList<String> permissions = new ArrayList<>();
+
+    permissions.add(Manifest.permission.CAMERA);
+    permissions.add(Manifest.permission.RECORD_AUDIO);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+      permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+    } else {
+      // Android API 32 or lower
+      permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+      permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    return permissions.toArray(new String[0]);
+  }
 }
