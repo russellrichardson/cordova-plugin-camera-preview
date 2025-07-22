@@ -216,10 +216,21 @@
     [self.context presentRenderbuffer:GL_RENDERBUFFER];
     [(GLKView *)(self.view)display];
 
-    if(self.sessionManager.assetWriterInput.readyForMoreMediaData && self.sessionManager.isRecording && self.sessionManager.session.isRunning) {
-      NSLog (@"readyForMoreMediaData");
+    if (self.sessionManager.assetWriterInput.readyForMoreMediaData &&
+        self.sessionManager.isRecording &&
+        self.sessionManager.session.isRunning) {
+
+      NSLog(@"readyForMoreMediaData");
+
       CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-      [self.sessionManager.pixelBufferAdaptor appendPixelBuffer:imageBuffer withPresentationTime:CMTimeMake(self.sessionManager.frameNumber, 25)];
+      CMTime presentationTime = CMTimeMake(self.sessionManager.frameNumber, 25);
+
+      if (!self.sessionManager.hasStartedSession) {
+        [self.sessionManager.assetWriterMyData startSessionAtSourceTime:presentationTime];
+        self.sessionManager.hasStartedSession = YES;
+      }
+
+      [self.sessionManager.pixelBufferAdaptor appendPixelBuffer:imageBuffer withPresentationTime:presentationTime];
       self.sessionManager.frameNumber++;
     }
     [self.renderLock unlock];

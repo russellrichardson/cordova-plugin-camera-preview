@@ -40,6 +40,7 @@
 - (void) startRecordVideo:(NSURL *)fileUrl width:(CGFloat)width height:(CGFloat)height;
 - (void) stopRecordVideo;
 
+@property (nonatomic, assign) BOOL hasStartedSession;
 @property (atomic) CIFilter *ciFilter;
 @property (nonatomic) NSLock *filterLock;
 @property (nonatomic) AVCaptureSession *session;

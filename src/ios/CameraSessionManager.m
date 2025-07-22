@@ -726,6 +726,8 @@
 
 
 -(void) startRecordVideo:(NSURL *)fileUrl width:(CGFloat)width height:(CGFloat)height {
+    
+    self.hasStartedSession = NO;
 
     // "best" solution is probably to determine input buffer size and defer creation of asset writer
     // until first frame is ready to be written in renderer
