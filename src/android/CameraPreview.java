@@ -84,10 +84,6 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     Manifest.permission.CAMERA
   };
 
-  private static final String [] videoPermissions = {
-    Manifest.permission.WRITE_EXTERNAL_STORAGE
-  };
-
   private CameraActivity fragment;
   private CallbackContext takePictureCallbackContext;
   private CallbackContext takeSnapshotCallbackContext;
@@ -125,7 +121,16 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     } else if (TAKE_SNAPSHOT_ACTION.equals(action)) {
       return takeSnapshot(args.getInt(0), callbackContext);
     }else if (START_RECORD_VIDEO_ACTION.equals(action)) {
-      return startRecordVideo(args.getString(0), args.getInt(1), args.getInt(2), args.getInt(3), args.getBoolean(4), callbackContext);
+      String[] videoPermissions = getVideoPermissions();
+
+      if (cordova.hasPermission(videoPermissions[0]) && cordova.hasPermission(videoPermissions[1]) && cordova.hasPermission(videoPermissions[2]) && cordova.hasPermission(videoPermissions[3])) {
+        return startRecordVideo(args.getString(0), args.getInt(1), args.getInt(2), args.getInt(3), args.getBoolean(4), callbackContext);
+      } else {
+        this.execCallback = callbackContext;
+        this.execArgs = args;
+        cordova.requestPermissions(this, VID_REQ_CODE, videoPermissions);
+        return true;
+      }
     } else if (STOP_RECORD_VIDEO_ACTION.equals(action)) {
       return stopRecordVideo(callbackContext);
     } else if (COLOR_EFFECT_ACTION.equals(action)) {
@@ -1142,38 +1147,38 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
       for (String cameraId : cManager.getCameraIdList()) {
         CameraCharacteristics characteristics = cManager.getCameraCharacteristics(cameraId);
 
-	JSONObject cameraData = new JSONObject();
+  JSONObject cameraData = new JSONObject();
 
-	// INFO_SUPPORTED_HARDWARE_LEVEL
-	Integer supportLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
-	cameraData.put("INFO_SUPPORTED_HARDWARE_LEVEL", supportLevel);
+  // INFO_SUPPORTED_HARDWARE_LEVEL
+  Integer supportLevel = characteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+  cameraData.put("INFO_SUPPORTED_HARDWARE_LEVEL", supportLevel);
 
-	// LENS_FACING
-	Integer lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
-	cameraData.put("LENS_FACING", lensFacing);
+  // LENS_FACING
+  Integer lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
+  cameraData.put("LENS_FACING", lensFacing);
 
-	// SENSOR_INFO_PHYSICAL_SIZE
-	SizeF sensorInfoPhysicalSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-	cameraData.put("SENSOR_INFO_PHYSICAL_SIZE_WIDTH", new Double(sensorInfoPhysicalSize.getWidth()));
-	cameraData.put("SENSOR_INFO_PHYSICAL_SIZE_HEIGHT", new Double(sensorInfoPhysicalSize.getHeight()));
+  // SENSOR_INFO_PHYSICAL_SIZE
+  SizeF sensorInfoPhysicalSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+  cameraData.put("SENSOR_INFO_PHYSICAL_SIZE_WIDTH", new Double(sensorInfoPhysicalSize.getWidth()));
+  cameraData.put("SENSOR_INFO_PHYSICAL_SIZE_HEIGHT", new Double(sensorInfoPhysicalSize.getHeight()));
 
-	// SENSOR_INFO_PIXEL_ARRAY_SIZE
-	Size sensorInfoPixelSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
-	cameraData.put("SENSOR_INFO_PIXEL_ARRAY_SIZE_WIDTH", new Integer(sensorInfoPixelSize.getWidth()));
-	cameraData.put("SENSOR_INFO_PIXEL_ARRAY_SIZE_HEIGHT", new Integer(sensorInfoPixelSize.getHeight()));
+  // SENSOR_INFO_PIXEL_ARRAY_SIZE
+  Size sensorInfoPixelSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE);
+  cameraData.put("SENSOR_INFO_PIXEL_ARRAY_SIZE_WIDTH", new Integer(sensorInfoPixelSize.getWidth()));
+  cameraData.put("SENSOR_INFO_PIXEL_ARRAY_SIZE_HEIGHT", new Integer(sensorInfoPixelSize.getHeight()));
 
-	// LENS_INFO_AVAILABLE_FOCAL_LENGTHS
-	float[] focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-	JSONArray focalLengthsArray = new JSONArray();
-	for (int focusId=0; focusId<focalLengths.length; focusId++) {
-	  JSONObject focalLengthsData = new JSONObject();
-	  focalLengthsData.put("FOCAL_LENGTH", new Double(focalLengths[focusId]));
-	  focalLengthsArray.put(focalLengthsData);
-	}
-	cameraData.put("LENS_INFO_AVAILABLE_FOCAL_LENGTHS", focalLengthsArray);
+  // LENS_INFO_AVAILABLE_FOCAL_LENGTHS
+  float[] focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+  JSONArray focalLengthsArray = new JSONArray();
+  for (int focusId=0; focusId<focalLengths.length; focusId++) {
+    JSONObject focalLengthsData = new JSONObject();
+    focalLengthsData.put("FOCAL_LENGTH", new Double(focalLengths[focusId]));
+    focalLengthsArray.put(focalLengthsData);
+  }
+  cameraData.put("LENS_INFO_AVAILABLE_FOCAL_LENGTHS", focalLengthsArray);
 
-	// add camera data to result list
-	cameraCharacteristicsArray.put(cameraData);
+  // add camera data to result list
+  cameraCharacteristicsArray.put(cameraData);
       }
 
       data.put("CAMERA_CHARACTERISTICS", cameraCharacteristicsArray);
