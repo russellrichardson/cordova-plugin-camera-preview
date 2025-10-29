@@ -120,11 +120,27 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
       return takePicture(args.getInt(0), args.getInt(1), args.getInt(2), callbackContext);
     } else if (TAKE_SNAPSHOT_ACTION.equals(action)) {
       return takeSnapshot(args.getInt(0), callbackContext);
-    }else if (START_RECORD_VIDEO_ACTION.equals(action)) {
+    } else if (START_RECORD_VIDEO_ACTION.equals(action)) {
       String[] videoPermissions = getVideoPermissions();
 
-      if (cordova.hasPermission(videoPermissions[0]) && cordova.hasPermission(videoPermissions[1]) && cordova.hasPermission(videoPermissions[2]) && cordova.hasPermission(videoPermissions[3])) {
-        return startRecordVideo(args.getString(0), args.getInt(1), args.getInt(2), args.getInt(3), args.getBoolean(4), callbackContext);
+      // Dynamically check all required permissions
+      boolean allGranted = true;
+      for (String perm : videoPermissions) {
+        if (!cordova.hasPermission(perm)) {
+          allGranted = false;
+          break;
+        }
+      }
+
+      if (allGranted) {
+        return startRecordVideo(
+          args.getString(0),
+          args.getInt(1),
+          args.getInt(2),
+          args.getInt(3),
+          args.getBoolean(4),
+          callbackContext
+        );
       } else {
         this.execCallback = callbackContext;
         this.execArgs = args;
@@ -1197,15 +1213,6 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     ArrayList<String> permissions = new ArrayList<>();
 
     permissions.add(Manifest.permission.CAMERA);
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
-      permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
-    } else {
-      // Android API 32 or lower
-      permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-      permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
 
     return permissions.toArray(new String[0]);
   }
